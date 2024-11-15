@@ -4,12 +4,24 @@
  * 3- slice
  */
 
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+
+
 
 const initialProductState = {
     productList: [], 
-    isProductListLoading: false 
+    isProductListLoading: false
+    
 }
+
+export const fetchGetAllProducts = createAsyncThunk(
+    'product/fetchGetAllProducts', 
+    async() => {
+        return await fetch('https://dummyjson.com/products')
+        .then(res => res.json())
+        .then(data => data); //datayı döner.
+    }
+);
 
 export const fetchFindllProducts = createAsyncThunk(
     'product/fetchFindllProducts',
@@ -20,10 +32,12 @@ export const fetchFindllProducts = createAsyncThunk(
     }
 )
 
+
+
 const productSlice = createSlice({
     name: 'product',
     initialState: initialProductState,
-    reducers: {},
+    reducers: {  },
     extraReducers: (build) => {
         build.addCase(fetchFindllProducts.pending, (state) => {
             
@@ -33,8 +47,13 @@ const productSlice = createSlice({
         });
         build.addCase(fetchFindllProducts.fulfilled, (state, action) => {
             state.isProductListLoading = false;
+           
+            
             state.productList = action.payload.products; //ürünleri productListesinin içerisine aktarıyoruz.
         });
+        build.addCase(fetchGetAllProducts.fulfilled, (state, action) => {
+            state.productList = action.payload.products;
+        })
     }
 })
 
